@@ -9,4 +9,7 @@
 3. 可以直接用导出的ONNXRUNTIME进行推理，测试准确率（参考quantized_onnx.py）
 4. 如果想QAT，可以尝试直接使用PPQ提供的QAT功能，模仿： https://github.com/openppl-public/ppq/blob/e39eecb9f7e5f017c28f180cb423f8a685c3db48/ppq/samples/QAT/myquantizer.py
     * PPQ不建议从头开始做QAT，一定是在PTQ的基础上做QAT!
-5. 如果想将PPQ量化的结果放回torch，可以参考ppq_onnx2torch.py和quantized_resnet9.py中的QuantizedResNet9，前者中的函数可以复用。这个流程比较繁琐，容易出错。
+5. 如果想将PPQ量化的结果放回torch，可以参考ppq_onnx2torch.py和quantized_resnet9.py中的QuantizedResNet9
+    * 这里的逻辑是在onnx中提取量化参数，然后在torch中手动搭建量化网络并加载这些量化参数；这个流程比较复杂，容易出错
+    * onnx转回torch是个深坑，尤其是加上量化的算子之后
+    * ppq_onnx2torch.py写得比较通用，可以复用；如果网络更加复杂需要增加一些代码
