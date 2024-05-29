@@ -10,7 +10,6 @@ import numpy as np
 import onnx
 from onnx import helper, TensorProto
 import onnxruntime as ort
-from onnx2torch import convert
 
 
 onnx_mode_path = "./ckpt/Quantized.onnx"

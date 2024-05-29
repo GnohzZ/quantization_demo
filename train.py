@@ -17,8 +17,10 @@ def train():
     device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     # net = resnet8().to(device)
     # net = Net().to(device)
-    net = QuantizeAwareResnet9().to(device)
+    net = QuantizeAwareResnet9()
+    net.getParams(extractInt8QuantizedOnnx('./ckpt/Quantized.onnx'))
     net.add_quantizer()
+    net.to(device)
     optimizer = torch.optim.Adam(net.parameters(), lr=0.001, weight_decay=1e-5)
     net.train()
 
@@ -35,7 +37,7 @@ def train():
     criterion = torch.nn.CrossEntropyLoss().to(device)
     torch.autograd.set_detect_anomaly(True)
     
-    num_epochs = 100
+    num_epochs = 10
     best_accuracy = 0
     
     train_accuracies = []
@@ -71,7 +73,7 @@ def train():
         
         if test_accuracy > best_accuracy:
             best_accuracy = test_accuracy
-            torch.save(net.state_dict(), './ckpt/resnet9.pth')
+            torch.save(net.state_dict(), './ckpt/QAT_resnet9.pth')
 
 
 def test(net):
@@ -83,22 +85,23 @@ def test(net):
                                             ])
 
     test_dataset = torchvision.datasets.CIFAR10('/data/CIFAR10', train=False, download=False, transform=test_transform)
-    data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=256, shuffle=False)
+    data_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     correct = 0
     total = 0
     with torch.no_grad():
         for i, data in enumerate(data_loader, 0):
             images, labels = data
+            torch.save(images, './data/input.tensor')
             images = images.to(device)
             labels = labels.to(device)
 
             outputs = net(images)
             _, predicted = torch.max(outputs, dim=1)
+            print(predicted, labels.flatten())
             total += labels.size(0)
             correct += (predicted == labels.flatten()).sum().item()
 
-    net.train()
     return correct / total
 
 
