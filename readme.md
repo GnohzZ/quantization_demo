@@ -2,7 +2,7 @@
 本项目的文件没有进行整理，比较混乱，请参考此readme阅读。
 ## 量化流程
 1. 将**预训练**的原模型导出为onnx
-2. 使用PPQ进行PTQ（参考resnet9_pyq.py）
+2. 使用PPQ进行PTQ（参考resnet9_ptq.py）
     * MyTQC应该不起作用
     * TargetPlatform.FPGA_INT8使用的Quantizer就是有2的整次幂约束的对称均匀Int8量化
     * 导出ONNXRUNTIME可以保留所有量化信息，其他导出平台在此项目测试环境下或多或少有问题

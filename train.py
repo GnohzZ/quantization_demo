@@ -13,6 +13,21 @@ import util
 import logging
 from ppq_onnx2torch import extractInt8QuantizedOnnx
 
+
+cifar10_labels = {
+    0: 'airplane',
+    1: 'automobile',
+    2: 'bird',
+    3: 'cat',
+    4: 'deer',
+    5: 'dog',
+    6: 'frog',
+    7: 'horse',
+    8: 'ship',
+    9: 'truck'
+}
+
+
 def train():
     device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     # net = resnet8().to(device)
@@ -92,7 +107,7 @@ def test(net):
     with torch.no_grad():
         for i, data in enumerate(data_loader, 0):
             images, labels = data
-            torch.save(images, './data/input.tensor')
+            torch.save(images, './data/' + cifar10_labels[labels[0].item()] + '.tensor')
             images = images.to(device)
             labels = labels.to(device)
 
